@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Tutor & Workspace</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: { ink: '#0a0908', hairline: '#2a2419', gold: '#c9a659', champagne: '#e9e0c9', ash: '#8b8377' },
+      },
+    },
+  };
+</script>
+<style>
+  body { background-color: #0a0908; color: #e9e0c9; font-family: system-ui, sans-serif; }
+  .chat-box { height: 380px; overflow-y: auto; }
+</style>
+</head>
+<body class="bg-ink text-champagne min-h-screen flex flex-col items-center p-4 md:p-10">
+
+  <header class="w-full max-w-3xl flex justify-between items-center py-4 border-b border-hairline mb-6">
+    <h1 class="text-xl font-bold text-gold tracking-widest">AI TUTOR WORKSPACE</h1>
+    <button onclick="toggleKeyModal()" class="text-xs uppercase border border-gold/40 text-gold px-3 py-1.5 hover:bg-gold hover:text-ink transition-colors">
+      ⚙️ API Key
+    </button>
+  </header>
+
+  <main class="w-full max-w-3xl bg-[#120f0a] border border-hairline rounded-lg p-6 shadow-xl flex flex-col">
+    
+    <div id="chat-history" class="chat-box space-y-4 pr-2 mb-4">
+      <div class="bg-hairline/40 p-3 rounded text-sm text-ash">
+        <strong class="text-gold">AI Tutor:</strong> Welcome! Enter your Gemini API key via the top-right button, then ask me anything you'd like to learn step-by-step.
+      </div>
+    </div>
+
+    <form onsubmit="sendMessage(event)" class="flex gap-2 border-t border-hairline pt-4">
+      <input 
+        id="user-input" 
+        type="text" 
+        placeholder="Ask a question or request a quick quiz..." 
+        class="flex-1 bg-ink border border-hairline rounded px-4 py-2 text-sm text-champagne focus:border-gold outline-none"
+        required
+      />
+      <button 
+        type="submit" 
+        id="send-btn"
+        class="bg-gold text-ink font-semibold px-6 py-2 rounded text-sm hover:bg-champagne transition-colors">
+        Send
+      </button>
+    </form>
+  </main>
+
+  <div id="key-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 hidden">
+    <div class="bg-ink border border-hairline p-6 rounded-lg max-w-md w-full">
+      <h3 class="text-gold font-bold mb-2">Google Gemini API Key</h3>
+      <p class="text-xs text-ash mb-4">Get a free key from <a href="https://aistudio.google.com" target="_blank" class="text-gold underline">aistudio.google.com</a>.</p>
+      <input 
+        id="api-key-input" 
+        type="password" 
+        placeholder="Paste your AIzaSy... key here" 
+        class="w-full bg-[#120f0a] border border-hairline rounded px-3 py-2 text-sm text-champagne mb-4 outline-none focus:border-gold"
+      />
+      <div class="flex justify-end gap-2">
+        <button onclick="toggleKeyModal()" class="px-4 py-2 text-xs text-ash uppercase">Cancel</button>
+        <button onclick="saveApiKey()" class="bg-gold text-ink px-4 py-2 rounded text-xs font-semibold uppercase">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function toggleKeyModal() {
+    document.getElementById('key-modal').classList.toggle('hidden');
+    const savedKey = localStorage.getItem('GEMINI_API_KEY') || '';
+    document.getElementById('api-key-input').value = savedKey;
+  }
+
+  function saveApiKey() {
+    const key = document.getElementById('api-key-input').value.trim();
+    if (key) {
+      localStorage.setItem('GEMINI_API_KEY', key);
+      alert('Key updated successfully!');
+      toggleKeyModal();
+    }
+  }
+
+  async function sendMessage(e) {
+    e.preventDefault();
+    const apiKey = localStorage.getItem('GEMINI_API_KEY');
+    
+    if (!apiKey) {
+      alert('Please click "⚙️ API Key" at top right and paste your key!');
+      toggleKeyModal();
+      return;
+    }
+
+    const inputEl = document.getElementById('user-input');
+    const chatHistory = document.getElementById('chat-history');
+    const userMsg = inputEl.value.trim();
+    if (!userMsg) return;
+
+    chatHistory.innerHTML += `
+      <div class="text-right">
+        <div class="inline-block bg-gold/10 border border-gold/30 text-champagne p-3 rounded text-sm text-left max-w-[85%]">
+          <strong class="text-gold">You:</strong> ${userMsg}
+        </div>
+      </div>
+    `;
+    inputEl.value = '';
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    const loadingId = 'loading-' + Date.now();
+    chatHistory.innerHTML += `
+      <div id="${loadingId}" class="bg-hairline/20 p-3 rounded text-sm text-ash">
+        <strong class="text-gold">AI Tutor:</strong> Thinking...
+      </div>
+    `;
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: `You are a patient, expert Socratic AI tutor. Explain clearly, use markdown formatting, and keep responses helpful.\n\nUser: ${userMsg}` }]
+          }]
+        })
+      });
+
+      const data = await response.json();
+      document.getElementById(loadingId)?.remove();
+
+      if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+        const reply = data.candidates[0].content.parts[0].text;
+        chatHistory.innerHTML += `
+          <div class="bg-hairline/40 p-3 rounded text-sm text-champagne">
+            <strong class="text-gold">AI Tutor:</strong><br>${reply.replace(/\n/g, '<br>')}
+          </div>
+        `;
+      } else if (data.error) {
+        chatHistory.innerHTML += `<div class="text-red-400 text-sm">Google API Error: ${data.error.message}</div>`;
+      } else {
+        chatHistory.innerHTML += `<div class="text-red-400 text-sm">Error: Unable to process response. Please check key in ⚙️ API Key.</div>`;
+      }
+    } catch (err) {
+      document.getElementById(loadingId)?.remove();
+      chatHistory.innerHTML += `<div class="text-red-400 text-sm">Connection error. Check network or API key.</div>`;
+    }
+
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
+</script>
+
+</body>
+</html>

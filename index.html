@@ -1,60 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nocturne — Fine Horology, Genève</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: { ink: '#0a0908', hairline: '#2a2419', gold: '#c9a659', champagne: '#e9e0c9', ash: '#8b8377' },
+      },
+    },
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  body { background-color: #0a0908; color: #e9e0c9; font-family: sans-serif; }
+  #particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .content { position: relative; z-index: 10; }
+  .watch-face {
+    background: radial-gradient(circle at 50% 50%, #17130c 0%, #0d0b07 70%);
+    box-shadow: inset 0 0 0 1px rgba(201,166,89,0.35);
+  }
+</style>
+</head>
+<body class="bg-ink text-champagne">
 
+<canvas id="particle-canvas"></canvas>
 
-NOCTURNE
-Collection Atelier Heritage Enquire
-Request Viewing
-Genève · Est. by hand, one at a time
-Time, gilded in silence.
-Nocturne builds a small number of mechanical watches each year, regulated by hand under low light, in a workshop that keeps no clocks of its own.
-View the Collection Our Craft →
-Scroll
-"A watch should be the one machine in your life that never asks for your attention — only your trust, renewed each morning it is wound."
-Étienne Roussel, Founder
-The Collection
-Three movements, one philosophy.
-Each piece is produced in a run of fewer than forty. None are reissued.
+<div class="content max-w-5xl mx-auto px-6 py-20">
+  <header class="flex justify-between items-center py-6 border-b border-hairline">
+    <h1 class="text-xl tracking-widest text-gold font-bold">NOCTURNE</h1>
+    <a href="#enquire" class="border border-gold text-gold px-4 py-2 text-xs uppercase tracking-widest hover:bg-gold hover:text-ink transition-colors">Request Viewing</a>
+  </header>
 
-Ref. 01 — Méridienne
-Hand-wound, three-hand
-18k rose gold case, guilloché dial, 70-hour reserve. Cased and regulated by a single hand.
-Price on request
+  <main class="py-24 text-center">
+    <p class="text-xs uppercase text-ash tracking-widest mb-4">Genève · Est. by hand</p>
+    <h2 class="text-6xl font-light mb-6">Time, <span class="text-gold italic">gilded</span> in silence.</h2>
+    <p class="text-ash max-w-md mx-auto mb-8">Nocturne builds a small number of mechanical watches each year under low light in Geneva.</p>
+    
+    <div class="grid md:grid-cols-3 gap-6 my-16 text-left">
+      <div class="p-8 border border-hairline bg-ink rounded">
+        <div class="w-24 h-24 mx-auto mb-6 rounded-full watch-face"></div>
+        <h3 class="text-gold text-sm tracking-widest uppercase mb-2">Ref. 01 — Méridienne</h3>
+        <p class="text-ash text-sm mb-4">18k rose gold case, guilloché dial, 70-hour reserve.</p>
+        <p class="text-xs text-champagne/70">Price on request</p>
+      </div>
+      <div class="p-8 border border-hairline bg-ink rounded">
+        <div class="w-24 h-24 mx-auto mb-6 rounded-full watch-face"></div>
+        <h3 class="text-gold text-sm tracking-widest uppercase mb-2">Ref. 02 — Éclipse</h3>
+        <p class="text-ash text-sm mb-4">Blackened bronze case, smoked sapphire dial.</p>
+        <p class="text-xs text-champagne/70">Price on request</p>
+      </div>
+      <div class="p-8 border border-hairline bg-ink rounded">
+        <div class="w-24 h-24 mx-auto mb-6 rounded-full watch-face"></div>
+        <h3 class="text-gold text-sm tracking-widest uppercase mb-2">Ref. 03 — Veilleuse</h3>
+        <p class="text-ash text-sm mb-4">Minute repeater, tuned by ear against a tuning fork.</p>
+        <p class="text-xs text-champagne/70">Price on request</p>
+      </div>
+    </div>
+  </main>
+</div>
 
-Ref. 02 — Éclipse
-Perpetual calendar
-Blackened bronze case, smoked sapphire dial. Tracks the moon as closely as the date.
-Price on request
+<script>
+  const canvas = document.getElementById('particle-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
 
-Ref. 03 — Veilleuse
-Minute repeater
-Chimes the hour on demand, tuned by ear against a tuning fork, never a machine.
-Price on request
-The Atelier
-Four stages. No shortcuts between them.
-01
-Sketch
-The movement is drawn before the case — proportion is decided in graphite, not gold.
-02
-Cast
-Each case is poured individually; small variations in the gold are left visible, not polished away.
-03
-Assemble
-Around two hundred parts are set by hand under a loupe, over several unhurried days.
-04
-Regulate
-The finished movement is timed across six positions before it is permitted to leave the bench.
-Heritage
-A workshop on the Rue des Étuves, since 1962.
-Nocturne has never employed more than nine watchmakers at once. The workshop keeps the shutters drawn during assembly — gold dust settles more evenly out of direct light, and old habits are rarely explained twice.
-Every watch that leaves the bench is entered by hand into a single ledger, still kept in the same drawer as the first entry, dated the fourteenth of March, 1962.
+  const count = 1000;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(count * 3);
+  for(let i=0; i<count*3; i++) positions[i] = (Math.random() - 0.5) * 10;
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-Rue des Étuves, Genève
-By Appointment Only
-Request a private viewing.
-Viewings are held in Geneva or by arrangement elsewhere. Please share a little about what draws you to Nocturne, and we will reply within a few days.
-Name
-Email
-Which piece interests you?
-Message
-Submit Enquiry
-© 1962–2026 Nocturne Horology, Genève
-Collection Atelier Enquire
+  const material = new THREE.PointsMaterial({ color: 0xc9a659, size: 0.03 });
+  const points = new THREE.Points(geometry, material);
+  scene.add(points);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    points.rotation.y += 0.001;
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+
+</body>
+</html>

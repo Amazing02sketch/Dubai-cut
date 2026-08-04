@@ -149,6 +149,7 @@
     `;
     chatHistory.scrollTop = chatHistory.scrollHeight;
 
+    // Direct endpoints for stable Flash models
     const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
     let success = false;
     let lastError = '';
@@ -187,7 +188,7 @@
 
     if (!success) {
       document.getElementById(loadingId)?.remove();
-      chatHistory.innerHTML += `<div class="text-red-400 text-sm">Google API Error: ${lastError || 'Unable to connect. Check key.'}</div>`;
+      chatHistory.innerHTML += `<div class="text-red-400 text-sm p-3 bg-red-900/20 border border-red-800 rounded">API Error: ${lastError || 'Unable to connect to Gemini API. Please check your key.'}</div>`;
     }
 
     chatHistory.scrollTop = chatHistory.scrollHeight;

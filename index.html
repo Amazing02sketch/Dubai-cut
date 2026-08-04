@@ -28,6 +28,35 @@
     </button>
   </header>
 
+  <!-- 3-GRID CARDS SECTION -->
+  <section class="w-full max-w-3xl mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Card 1 -->
+      <div class="bg-[#120f0a] border border-hairline p-5 rounded-lg hover:border-gold/50 transition">
+        <div class="w-8 h-8 bg-gold/10 text-gold rounded-md flex items-center justify-center font-bold text-sm mb-3">01</div>
+        <h3 class="text-gold font-semibold text-sm mb-1">Concept Breakdown</h3>
+        <p class="text-ash text-xs leading-relaxed">Ask complex questions to get clear, step-by-step explanations tailored to your pace.</p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bg-[#120f0a] border border-hairline p-5 rounded-lg hover:border-gold/50 transition">
+        <div class="w-8 h-8 bg-gold/10 text-gold rounded-md flex items-center justify-center font-bold text-sm mb-3">02</div>
+        <h3 class="text-gold font-semibold text-sm mb-1">Interactive Quizzes</h3>
+        <p class="text-ash text-xs leading-relaxed">Request quick practice questions on any topic to test and strengthen your recall.</p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="bg-[#120f0a] border border-hairline p-5 rounded-lg hover:border-gold/50 transition">
+        <div class="w-8 h-8 bg-gold/10 text-gold rounded-md flex items-center justify-center font-bold text-sm mb-3">03</div>
+        <h3 class="text-gold font-semibold text-sm mb-1">Instant Guidance</h3>
+        <p class="text-ash text-xs leading-relaxed">Get 24/7 AI-powered answers and problem-solving help whenever you hit a roadblock.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CHATBOT MAIN CONTAINER -->
   <main class="w-full max-w-3xl bg-[#120f0a] border border-hairline rounded-lg p-6 shadow-xl flex flex-col">
     
     <div id="chat-history" class="chat-box space-y-4 pr-2 mb-4">
@@ -53,6 +82,7 @@
     </form>
   </main>
 
+  <!-- API KEY MODAL -->
   <div id="key-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 hidden">
     <div class="bg-ink border border-hairline p-6 rounded-lg max-w-md w-full">
       <h3 class="text-gold font-bold mb-2">Google Gemini API Key</h3>
@@ -119,8 +149,7 @@
     `;
     chatHistory.scrollTop = chatHistory.scrollHeight;
 
-    // Tries 3.5-flash first, then automatically falls back if Google returns 404
-    const models = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+    const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
     let success = false;
     let lastError = '';
 
@@ -167,3 +196,4 @@
 
 </body>
 </html>
+
